@@ -1,0 +1,80 @@
+version: '3.3'
+
+services:
+  db:
+   image: mariadb:10.11
+   restart: always
+   environment:
+     MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+     MYSQL_DATABASE: ${MYSQL_DATABASE}
+     MYSQL_USER: ${MYSQL_USER}
+     MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+   volumes:
+     - ./db_data:/var/lib/mysql
+     - ./my.cnf:/etc/mysql/my.cnf  # Asegúrate de que este archivo existe y es válido
+   ports:
+     - "3306:3306"
+   healthcheck:
+     test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+     interval: 10s
+     retries: 5
+     start_period: 20s
+
+
+  django:
+    build: .
+    restart: always
+    volumes:
+      - .:/app
+      - ./static:/app/static  # Para archivos estáticos de Django
+      - ./media:/app/media    # Para archivos de medios
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_EMAIL=admin@example.com
+      - DJANGO_SUPERUSER_PASSWORD=adminpass
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    environment:
+      - PMA_ARBITRARY=1
+      - UPLOAD_LIMIT=100M
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8081:80"
+
+  vscode:
+    image: codercom/code-server:latest
+    container_name: vscode
+    restart: always
+    volumes:
+      - .:/home/coder/project
+    environment:
+      - PASSWORD=mysecurepassword  # Cambiar la contraseña
+    ports:
+      - "8443:8080"
+
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+      - "81:81"
+    volumes:
+      - ./nginx/data:/data
+      - ./nginx/letsencrypt:/etc/letsencrypt
+      - ./static:/data/nginx/static  # Volumen para archivos estáticos
+      - ./media:/data/nginx/media    # Volumen para archivos de medios
+

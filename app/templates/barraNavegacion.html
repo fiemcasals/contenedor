@@ -1,0 +1,38 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barra de Navegación</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+
+<!-- Barra de navegación -->
+<nav>
+    <!-- Ícono de hamburguesa -->
+    <div class="menu-icon" onclick="toggleMenu()">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+    </div>
+     
+
+    <!-- Menú -->
+    <ul id="menu" style="display: none;">
+        <li><a href="{% url 'bienvenido' %}">Bienvenido</a></li>
+        <li><a href="{% url 'tipificacion' %}">Tipificación de lenguajes</a></li>
+    </ul>
+</nav>
+
+{% block content %}
+{% endblock %}
+
+<!-- Cargar JS -->
+<script src="{% static 'js/script.js' %}"></script>
+
+</body>
+</html>
+

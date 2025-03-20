@@ -26,8 +26,8 @@ services:
     restart: always
     volumes:
       - .:/app
-      - ./static:/app/static  # Para archivos estáticos de Django
-      - ./media:/app/media    # Para archivos de medios
+      - ./static:/app/static  # Para archivos estáticos de Django<-eliminar ya esta en app
+      - ./media:/app/media    # Para archivos de medios #idem
     depends_on:
       db:
         condition: service_healthy
@@ -37,7 +37,7 @@ services:
       - DJANGO_SUPERUSER_USERNAME=admin
       - DJANGO_SUPERUSER_EMAIL=admin@example.com
       - DJANGO_SUPERUSER_PASSWORD=adminpass
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} #esto va a buscar directamente a un .env que debo crear en la misma ubicacion de mi archivo
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       
 

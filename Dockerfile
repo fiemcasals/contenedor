@@ -19,7 +19,10 @@ RUN apk update && apk add --no-cache \
     build-base \
     linux-headers \
     pkgconfig \
-    mysql-client  # Ya estaba al final, lo incluimos aquí
+    mysql-client \
+    python3 \
+    py3-pip \
+    py3-virtualenv  # Se agregan herramientas para Python
 
 # Instalar y actualizar pip
 RUN pip install --upgrade pip
